@@ -8,13 +8,14 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { PdfRenderer, providePdfHyphenation, renderToBlob } from '@ngpdf/core';
+import { PdfRenderer, providePdfEmoji, providePdfHyphenation, renderToBlob } from '@ngpdf/core';
 import { captureChart } from './capture-chart';
 import { CHART_BARS, makeCommunicators, makeLicences } from './data';
 import { ArticleSample } from './documents/article-sample';
 import { CaptureReport } from './documents/capture-report';
 import { CommunicatorsList } from './documents/communicators-list';
 import { ContentsSample } from './documents/contents-sample';
+import { EmojiSample, demoEmoji } from './documents/emoji-sample';
 import { FixedSample } from './documents/fixed-sample';
 import { FontsSample } from './documents/fonts-sample';
 import { HyphensSample, demoHyphenate } from './documents/hyphens-sample';
@@ -41,6 +42,7 @@ const DOCUMENT_NAMES = [
   'split-row-sample',
   'opacity-sample',
   'notes-sample',
+  'emoji-sample',
 ] as const;
 export type DemoDocument = (typeof DOCUMENT_NAMES)[number];
 
@@ -80,6 +82,11 @@ export class App {
   // Only the hyphens sample gets the hyphenation function: a child injector scopes it.
   private readonly hyphenation = createEnvironmentInjector(
     [providePdfHyphenation(demoHyphenate)],
+    inject(EnvironmentInjector),
+  );
+  // Only the emoji sample gets emoji images: a child injector scopes the provider.
+  private readonly emoji = createEnvironmentInjector(
+    [providePdfEmoji(demoEmoji)],
     inject(EnvironmentInjector),
   );
   private readonly chart = viewChild.required<ElementRef<HTMLElement>>('chart');
@@ -151,6 +158,8 @@ export class App {
         return this.pdf.toBlob(OpacitySample);
       case 'notes-sample':
         return this.pdf.toBlob(NotesSample);
+      case 'emoji-sample':
+        return renderToBlob(EmojiSample, { injector: this.emoji });
     }
   }
 

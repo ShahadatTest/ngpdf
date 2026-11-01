@@ -108,6 +108,8 @@ const DOCUMENTS = [
       },
     ],
   },
+  // Emoji are images, not text: pdfimages lists each of the 7 drawn, from 5 embedded images.
+  { name: 'emoji-sample', pages: 1, images: 7, contains: ['© 2026 Example Club stays text.'] },
 ];
 
 const update = process.argv.includes('--update');
